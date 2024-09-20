@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post("/initiate")
 async def initiate_story(
     request: StoryInitiationRequest,
-    storyteller: OpenAIStoryteller = Depends(yield_storyteller)
+    storyteller: OpenAIStoryteller = Depends(yield_storyteller),
 ) -> None:
 
     return storyteller.initiate_story(request)

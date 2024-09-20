@@ -8,9 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
-from ii.router import (
-    story
-)
+from ii.router import story
 
 environment = os.getenv("ENVIRONMENT", "dev")  # Default to 'development' if not set
 

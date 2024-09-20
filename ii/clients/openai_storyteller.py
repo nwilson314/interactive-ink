@@ -12,7 +12,6 @@ class OpenAIStoryteller:
         self.llm = OpenAI(model="gpt-4o")
         Settings.llm = self.llm
 
-        
     def initiate_story(self, request: StoryInitiationRequest):
         response = self.llm.chat(
             [
@@ -23,12 +22,14 @@ class OpenAIStoryteller:
                 ChatMessage(
                     role=MessageRole.USER,
                     content=f"Generate a {request.length} {request.genre} story.",
-                )
+                ),
             ]
         )
         return response.message.content
 
+
 storyteller = OpenAIStoryteller()
+
 
 def yield_storyteller() -> Generator[OpenAIStoryteller, None, None]:
     yield storyteller

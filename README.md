@@ -1,4 +1,4 @@
 ## Running
 ```bash
-poetry run uvicorn interactive-ink:app --reload
+poetry run uvicorn ii:app --reload
 ```

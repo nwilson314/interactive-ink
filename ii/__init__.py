@@ -8,9 +8,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from ii.router import (
+    story
+)
+
 environment = os.getenv("ENVIRONMENT", "dev")  # Default to 'development' if not set
 
 app = FastAPI()
+
+app.include_router(story.router)
 
 if environment == "dev":
     logger.warning("Running in development mode - allowing CORS for all origins")

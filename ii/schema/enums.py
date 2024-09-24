@@ -15,7 +15,7 @@ class StoryLength(str, Enum):
     SHORT = "Short"
     MEDIUM = "Medium"
     LONG = "Long"
-    
+
     @classmethod
     def num_exchanges(cls, value: "StoryLength") -> int:
         lengths = {

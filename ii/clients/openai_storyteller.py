@@ -19,25 +19,15 @@ class OpenAIStoryteller:
                     role=MessageRole.SYSTEM,
                     content=f"You are a story telling AI. You generate stories for the user. Always try to make the story both unique and interesting for the user. \
                         The story will be of the choose your own adventure variety. The story will be {request.length.value} {request.genre.value}. \
-                        There will be {StoryLength.num_exchanges(request.length)} action events for the user to choose from over the course of the story. ",
+                        There will be {StoryLength.num_exchanges(request.length)} action events for the user to choose from over the course of the story. \
+                        Generate an initial response and then remake it with completely new characters and settings. Only include the second response.",
                 ),
                 ChatMessage(
                     role=MessageRole.USER,
-                    content=f"To start, generate the first piece of plot for the user. Do not yet generate the list of available actions. That will come next.",
+                    content=f"To start, generate the first piece of plot. Do not yet generate the list of available actions. That will come next. Provide only the story content.",
                 ),
             ]
         response = self.llm.chat(
-            messages
-        )
-
-        messages.append(response.message)
-        messages.append(
-            ChatMessage(
-                role=MessageRole.USER,
-                content=f"Come up with something completely different than that intro but in the same genre.",
-            )
-        )
-        response  = self.llm.chat(
             messages
         )
 

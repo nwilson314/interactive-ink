@@ -45,7 +45,7 @@ class StoryBlock(BaseModel):
 
     def __str__(self):
         return self.block_template.format(
-            plot=self.segment.content,
-            actions=", ".join(self.segment.choices),
-            choice=self.chosen or "",
+            content=self.segment.content,
+            choices=", ".join(self.segment.choices),
+            chosen=self.chosen or "",
         )

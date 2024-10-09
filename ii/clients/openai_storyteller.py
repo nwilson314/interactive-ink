@@ -32,6 +32,8 @@ Continue the story by generating the next block's CONTENT and set of CHOICES.
 
 
 Use the provided data model to structure your output.
+
+This will be the last STORYBLOCK? {last_block}. If YES, wrap up the story in the next block (do not provide any choices). 
 """
 
 
@@ -49,6 +51,7 @@ class OpenAIStoryteller:
             story_length=StoryLength.num_exchanges(request.length.value),
             num_blocks=0,
             genre=request.genre.value,
+            last_block="NO",
         )
 
         return Story(
@@ -56,6 +59,28 @@ class OpenAIStoryteller:
             blocks=[StoryBlock(segment=segment)],
             genre=request.genre,
             length=request.length,
+        )
+    
+    def continue_story(self, story: Story) -> Story:
+        story_str = "\n".join(str(b) for b in story.blocks)
+        last_block = "YES" if len(story.blocks) >= StoryLength.num_exchanges(story.length) else "NO"
+
+        prompt_template = PromptTemplate(SEGMENT_GENERATION_TEMPLATE)
+        segment = self.llm.structured_predict(
+            StorySegment,
+            prompt_template,
+            story=story_str,
+            story_length=StoryLength.num_exchanges(story.length.value),
+            num_blocks=len(story.blocks),
+            genre=story.genre.value,
+            last_block=last_block,
+        )
+
+        return Story(
+            id_=story.id_,
+            blocks=story.blocks + [StoryBlock(segment=segment)],
+            genre=story.genre,
+            length=story.length,
         )
 
 

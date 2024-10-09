@@ -23,3 +23,5 @@ class StoryLength(str, Enum):
             StoryLength.MEDIUM: 7,
             StoryLength.LONG: 15,
         }
+
+        return lengths[value]

@@ -17,3 +17,11 @@ async def initiate_story(
 ) -> Story:
 
     return storyteller.initiate_story(request)
+
+@router.post("/continue")
+async def continue_story(
+    request: Story,
+    storyteller: OpenAIStoryteller = Depends(yield_storyteller),
+) -> Story:
+
+    return storyteller.continue_story(request)

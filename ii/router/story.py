@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from ii.clients.openai_storyteller import OpenAIStoryteller, yield_storyteller
-from ii.schema.story import StoryInitiationRequest, StoryInitiationResponse
+from ii.schema.story import StoryInitiationRequest, Story
 
 
 router = APIRouter(
@@ -14,6 +14,6 @@ router = APIRouter(
 async def initiate_story(
     request: StoryInitiationRequest,
     storyteller: OpenAIStoryteller = Depends(yield_storyteller),
-) -> StoryInitiationResponse:
+) -> Story:
 
     return storyteller.initiate_story(request)

@@ -1,13 +1,38 @@
 from typing import Generator
 from uuid import uuid4
 
-from llama_index.core.llms import ChatMessage as ChatGPTMessage, MessageRole
 from llama_index.core import Settings
+from llama_index.core.prompts import PromptTemplate
 from llama_index.llms.openai import OpenAI
 
-from ii.schema.chat_message import ChatMessage
 from ii.schema.enums import StoryLength
-from ii.schema.story import StoryInitiationRequest, StoryInitiationResponse, ContinueStoryRequest, ContinueStoryResponse
+from ii.schema.story import StorySegment, StoryBlock, StoryInitiationRequest, Story
+
+
+SEGMENT_GENERATION_TEMPLATE = """
+You are working with a human to create a story in the style of choose your own adventure.
+
+The human is playing the role of the protaganist in the story which you are tasked to
+help write. To create the story, we do it in steps, where each step produces a STORYBLOCK.
+Each STORYBLOCK consists of a CONTENT, a set of CHOICES that the protaganist can take, and the
+chosen CHOICE. The story will have a total of {story_length} STORYBLOCKs. There are 
+currently NUM_BLOCKS = {num_blocks}. The genre is {genre}.
+
+Below we attach the history of the adventure so far.
+
+PREVIOUS STORYBLOCKs:
+---
+{story}
+
+If there are no previous STORYBLOCKs (i.e. NUM_BLOCKS == 0), generate an initial plot. Then take 
+that initial plot and characters and start over. DO NOT REUSE ANYTHING. Give the 
+protaganist a name and an interesting challenge to solve.
+
+Continue the story by generating the next block's CONTENT and set of CHOICES. 
+
+
+Use the provided data model to structure your output.
+"""
 
 
 class OpenAIStoryteller:
@@ -15,33 +40,22 @@ class OpenAIStoryteller:
         self.llm = OpenAI(model="gpt-4o", temperature=0.9)
         Settings.llm = self.llm
 
-    def initiate_story(self, request: StoryInitiationRequest) -> StoryInitiationResponse:
-        messages = [
-            ChatGPTMessage(
-                role=MessageRole.SYSTEM,
-                content=f"You are a story telling AI. You generate stories for the user. Always try to make the story both unique and interesting for the user. \
-                        The story will be of the choose your own adventure variety. The story will be of {request.length.value} length and in the genre {request.genre.value}. \
-                        There will be {StoryLength.num_exchanges(request.length)} action events for the user to choose from over the course of the story. \
-                        Generate an initial response and then remake it with completely new characters and settings. Only include the second response.",
-            ),
-            ChatGPTMessage(
-                role=MessageRole.USER,
-                content=f"To start, generate the first piece of plot. Do not yet generate the list of available actions. That will come next. Provide only the story content.",
-            ),
-        ]
-        response = self.llm.chat(messages)
-        messages.append(response.message)
+    def initiate_story(self, request: StoryInitiationRequest) -> None:
+        prompt_template = PromptTemplate(SEGMENT_GENERATION_TEMPLATE)
+        segment = self.llm.structured_predict(
+            StorySegment,
+            prompt_template,
+            story="",
+            story_length=StoryLength.num_exchanges(request.length.value),
+            num_blocks=0,
+            genre=request.genre.value,
+        )
 
-        return StoryInitiationResponse(
-            story_id=uuid4(),
-            initiation_request=request,
-            messages=[
-                ChatMessage(
-                    role=message.role,
-                    content=message.content,
-                )
-                for message in messages
-            ]
+        return Story(
+            id_=str(uuid4()),
+            blocks=[StoryBlock(segment=segment)],
+            genre=request.genre,
+            length=request.length,
         )
 
 

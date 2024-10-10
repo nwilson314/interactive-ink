@@ -37,11 +37,18 @@ class StorySegment(BaseModel):
     )
 
 
+class BlockImage(BaseModel):
+    url: str
+    image_style: str
+    image_description: str
+
+
 class StoryBlock(BaseModel):
     id_: str = Field(default_factory=lambda: str(uuid.uuid4()))
     segment: StorySegment
     chosen: Optional[str] = None
     block_template: str = BLOCK_TEMPLATE
+    block_image: Optional[BlockImage]
 
     def __str__(self):
         return self.block_template.format(

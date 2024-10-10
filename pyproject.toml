@@ -12,6 +12,7 @@ python-dotenv = "^1.0.1"
 black = "^24.8.0"
 fastapi = {extras = ["standard"], version = "^0.115.0"}
 llama-index = "^0.11.10"
+openai = "^1.51.2"
 
 
 [build-system]

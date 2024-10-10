@@ -3,6 +3,8 @@ The backend for Interactive Ink. Written in Python making use of FastAPI, Llama 
 
 Frontend code [here](https://github.com/nwilson314/interactive-ink-frontend).
 
+A running demo can be found here: https://interactive-ink.fly.dev/ (startup times may be slow initially).
+
 ## Running
 ```bash
 poetry run uvicorn ii:app --reload

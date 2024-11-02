@@ -12,7 +12,7 @@ class StoryInitiationRequest(BaseModel):
 
 
 class Story(BaseModel):
-    id_: str = Field(default_factory=lambda: str(uuid.uuid4())) 
+    id_: str = Field(default_factory=lambda: str(uuid.uuid4()))
     blocks: list["StoryBlock"]
     genre: StoryGenre
     length: StoryLength

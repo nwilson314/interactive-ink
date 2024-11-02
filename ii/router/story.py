@@ -18,6 +18,7 @@ async def initiate_story(
 
     return storyteller.initiate_story(request)
 
+
 @router.post("/continue")
 async def continue_story(
     request: Story,
